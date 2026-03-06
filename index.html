@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Penghitung Rata-Rata Rapot Kelas 12</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0a0e1a;
+        --surface: #111827;
+        --card: #161d2e;
+        --border: #1e2d45;
+        --accent: #3b82f6;
+        --accent2: #06b6d4;
+        --gold: #f59e0b;
+        --text: #e2e8f0;
+        --muted: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Background decoration */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -200px;
+        left: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 48px;
+        animation: fadeDown 0.7s ease both;
+      }
+
+      .header-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(6, 182, 212, 0.15));
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: var(--accent2);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 6px 18px;
+        border-radius: 100px;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.15;
+        margin-bottom: 12px;
+      }
+
+      .header p {
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 300;
+      }
+
+      /* Student Info */
+      .student-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+        animation: fadeUp 0.6s ease 0.1s both;
+      }
+
+      @media (max-width: 600px) {
+        .student-card {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .field-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .field-group input,
+      .field-group select {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .field-group input:focus,
+      .field-group select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+      }
+
+      .field-group input::placeholder {
+        color: var(--muted);
+      }
+
+      /* Grades Table */
+      .grades-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 28px;
+        animation: fadeUp 0.6s ease 0.2s both;
+      }
+
+      .grades-header {
+        padding: 22px 28px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .grades-header-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      .grades-header h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .grades-header span {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .subject-row {
+        display: grid;
+        grid-template-columns: 32px 1fr 120px 120px 48px;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 24px;
+        border-bottom: 1px solid rgba(30, 45, 69, 0.5);
+        transition: background 0.2s;
+      }
+
+      .subject-row:last-child {
+        border-bottom: none;
+      }
+      .subject-row:hover {
+        background: rgba(59, 130, 246, 0.04);
+      }
+
+      .subject-row.header-row {
+        background: rgba(30, 45, 69, 0.6);
+        padding: 10px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .subject-row.header-row span {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .row-num {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .subject-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .subject-icon {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 15px;
+      }
+
+      .grade-input {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 9px 14px;
+        text-align: center;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+      }
+
+      .grade-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+      }
+
+      .grade-display {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 9px;
+        border-radius: 8px;
+        background: rgba(30, 45, 69, 0.4);
+      }
+
+      .grade-display.A {
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+      }
+      .grade-display.B {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+      }
+      .grade-display.C {
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .grade-display.D {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+      }
+      .grade-display.empty {
+        color: var(--muted);
+      }
+
+      .delete-btn {
+        width: 32px;
+        height: 32px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .delete-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: var(--danger);
+      }
+
+      /* Result Panel */
+      .result-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 28px;
+        animation: fadeUp 0.6s ease 0.3s both;
+      }
+
+      @media (max-width: 600px) {
+        .result-panel {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--accent-color, var(--accent));
+        opacity: 0.7;
+      }
+
+      .stat-card.rata {
+        --accent-color: #3b82f6;
+      }
+      .stat-card.tertinggi {
+        --accent-color: #10b981;
+      }
+      .stat-card.terendah {
+        --accent-color: #ef4444;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      .stat-value {
+        font-family: "Playfair Display", serif;
+        font-size: 2.6rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--accent-color, var(--text));
+        margin-bottom: 4px;
+      }
+
+      .stat-sub {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 300;
+      }
+
+      /* Predikat */
+      .predikat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px 28px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        animation: fadeUp 0.6s ease 0.35s both;
+      }
+
+      .predikat-badge {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        font-weight: 900;
+        flex-shrink: 0;
+        border: 2px solid currentColor;
+        transition: all 0.4s ease;
+      }
+
+      .predikat-badge.A {
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.12);
+      }
+      .predikat-badge.B {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.12);
+      }
+      .predikat-badge.C {
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.12);
+      }
+      .predikat-badge.D {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.12);
+      }
+      .predikat-badge.na {
+        color: var(--muted);
+        background: rgba(100, 116, 139, 0.1);
+        font-size: 1rem;
+      }
+
+      .predikat-info h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+      }
+
+      .predikat-info p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Buttons */
+      .actions {
+        display: flex;
+        gap: 12px;
+        animation: fadeUp 0.6s ease 0.4s both;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 24px;
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+      }
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-outline:hover {
+        background: var(--card);
+        border-color: var(--muted);
+      }
+
+      .btn-danger {
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.08);
+      }
+
+      /* Progress Bar per mapel */
+      .grade-bar {
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-top: 3px;
+        overflow: hidden;
+        display: none;
+      }
+      .grade-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.4s ease;
+      }
+
+      /* Subject mobile collapse */
+      @media (max-width: 600px) {
+        .subject-row {
+          grid-template-columns: 24px 1fr auto;
+          grid-template-areas:
+            "num name del"
+            ". nilai predikat";
+          gap: 8px;
+        }
+        .subject-row.header-row {
+          display: none;
+        }
+        .grade-input {
+          width: 100px;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Print */
+      @media print {
+        body {
+          background: white;
+          color: #111;
+        }
+        .actions,
+        .delete-btn {
+          display: none !important;
+        }
+        .card,
+        .grades-card,
+        .student-card,
+        .stat-card,
+        .predikat-card {
+          border: 1px solid #ddd !important;
+          background: white !important;
+        }
+        .header h1,
+        .subject-name {
+          color: #111 !important;
+          -webkit-text-fill-color: #111 !important;
+        }
+        .grade-input {
+          border: 1px solid #ccc !important;
+          color: #111 !important;
+          background: white !important;
+        }
+        body::before,
+        body::after {
+          display: none;
+        }
+      }
+
+      .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+        margin: 28px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-badge">Kelas 12 · Teknik & Kesehatan</div>
+        <h1>Penghitung Rata-Rata<br />Rapot Siswa</h1>
+        <p>Masukkan nilai untuk setiap mata pelajaran, rata-rata akan dihitung otomatis</p>
+      </div>
+
+      <!-- Student Info -->
+      <div class="student-card">
+        <div class="field-group">
+          <label>Nama Siswa</label>
+          <input type="text" id="namaInput" placeholder="Contoh: Budi Santoso" />
+        </div>
+        <div class="field-group">
+          <label>Kelas</label>
+          <input type="text" id="kelasInput" placeholder="Contoh: XII Teknik 2" />
+        </div>
+        <div class="field-group">
+          <label>Semester</label>
+          <select id="semesterInput">
+            <option value="">Pilih Semester</option>
+            <option value="Semester 1 (Ganjil)">Semester 1 (Ganjil)</option>
+            <option value="Semester 2 (Genap)">Semester 2 (Genap)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grades -->
+      <div class="grades-card">
+        <div class="grades-header">
+          <div class="grades-header-icon">📚</div>
+          <h2>Nilai Mata Pelajaran</h2>
+          <span id="filledCount">0 / 13 diisi</span>
+        </div>
+        <div class="subject-row header-row">
+          <span></span>
+          <span>Mata Pelajaran</span>
+          <span>Nilai (0–100)</span>
+          <span>Predikat</span>
+          <span></span>
+        </div>
+
+        <div id="subjectsContainer"></div>
+      </div>
+
+      <!-- Result Stats -->
+      <div class="result-panel">
+        <div class="stat-card rata">
+          <div class="stat-label">Rata-Rata</div>
+          <div class="stat-value" id="avgValue">—</div>
+          <div class="stat-sub" id="avgSub">Belum ada nilai</div>
+        </div>
+        <div class="stat-card tertinggi">
+          <div class="stat-label">Nilai Tertinggi</div>
+          <div class="stat-value" id="highValue">—</div>
+          <div class="stat-sub" id="highSub">—</div>
+        </div>
+        <div class="stat-card terendah">
+          <div class="stat-label">Nilai Terendah</div>
+          <div class="stat-value" id="lowValue">—</div>
+          <div class="stat-sub" id="lowSub">—</div>
+        </div>
+      </div>
+
+      <!-- Predikat -->
+      <div class="predikat-card">
+        <div class="predikat-badge na" id="predikatBadge">?</div>
+        <div class="predikat-info">
+          <h3 id="predikatTitle">Belum Ada Nilai</h3>
+          <p id="predikatDesc">Masukkan nilai mata pelajaran untuk melihat predikat kelulusan</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Cetak Rapot</button>
+        <button class="btn btn-outline" onclick="resetAll()">🔄 Reset Nilai</button>
+        <button class="btn btn-outline" onclick="isiContoh()">✨ Isi Contoh</button>
+      </div>
+    </div>
+
+    <script>
+      const subjects = [
+        { id: "kimia", name: "Kimia", icon: "⚗️" },
+        { id: "fisika", name: "Fisika", icon: "⚡" },
+        { id: "matwa", name: "Matematika Wajib", icon: "📐" },
+        { id: "matlanj", name: "Matematika Lanjutan", icon: "🔢" },
+        { id: "pkwu", name: "PKWU", icon: "💼" },
+        { id: "senbud", name: "Seni Budaya", icon: "🎨" },
+        { id: "sejarah", name: "Sejarah", icon: "🏛️" },
+        { id: "pkn", name: "PKN", icon: "🏳️" },
+        { id: "bind", name: "Bahasa Indonesia", icon: "📖" },
+        { id: "bing", name: "Bahasa Inggris", icon: "🌐" },
+        { id: "agama", name: "Agama", icon: "🕌" },
+        { id: "informatika", name: "Informatika", icon: "💻" },
+        { id: "pjok", name: "PJOK", icon: "⚽" },
+        { id: "biologi", name: "Biologi", icon: "🧬" },
+        { id: "ekonomi", name: "Ekonomi", icon: "💰" },
+        { id: "geografi", name: "Geografi", icon: "🌍" },
+        { id: "sosiologi", name: "Sosiologi", icon: "👥" },
+      ];
+
+      function getPredikat(val) {
+        if (val >= 90) return { letter: "A", label: "Sangat Baik", desc: "Melampaui Kompetensi" };
+        if (val >= 75) return { letter: "B", label: "Baik", desc: "Memenuhi Kompetensi" };
+        if (val >= 60) return { letter: "C", label: "Cukup", desc: "Hampir Memenuhi Kompetensi" };
+        return { letter: "D", label: "Perlu Bimbingan", desc: "Belum Memenuhi Kompetensi" };
+      }
+
+      function buildRows() {
+        const container = document.getElementById("subjectsContainer");
+        container.innerHTML = "";
+        subjects.forEach((s, i) => {
+          const row = document.createElement("div");
+          row.className = "subject-row";
+          row.innerHTML = `
+      <span class="row-num">${i + 1}</span>
+      <span class="subject-name"><span class="subject-icon">${s.icon}</span>${s.name}</span>
+      <input class="grade-input" type="number" id="grade_${s.id}" 
+             min="0" max="100" placeholder="—"
+             oninput="handleInput(this, '${s.id}')"
+             onblur="clampValue(this)" />
+      <div class="grade-display empty" id="predikat_${s.id}">—</div>
+      <button class="delete-btn" onclick="clearGrade('${s.id}')" title="Hapus nilai">✕</button>
+    `;
+          container.appendChild(row);
+        });
+      }
+
+      function clampValue(input) {
+        let v = parseFloat(input.value);
+        if (!isNaN(v)) {
+          if (v < 0) input.value = 0;
+          if (v > 100) input.value = 100;
+        }
+        recalculate();
+      }
+
+      function handleInput(input, sid) {
+        let v = parseFloat(input.value);
+        const el = document.getElementById("predikat_" + sid);
+        if (!isNaN(v) && input.value !== "") {
+          v = Math.max(0, Math.min(100, v));
+          const p = getPredikat(v);
+          el.textContent = p.letter + " · " + p.label;
+          el.className = "grade-display " + p.letter;
+        } else {
+          el.textContent = "—";
+          el.className = "grade-display empty";
+        }
+        recalculate();
+      }
+
+      function clearGrade(sid) {
+        document.getElementById("grade_" + sid).value = "";
+        document.getElementById("predikat_" + sid).textContent = "—";
+        document.getElementById("predikat_" + sid).className = "grade-display empty";
+        recalculate();
+      }
+
+      function recalculate() {
+        const values = [];
+        const names = [];
+        subjects.forEach((s) => {
+          const v = parseFloat(document.getElementById("grade_" + s.id).value);
+          if (!isNaN(v)) {
+            values.push(v);
+            names.push(s.name);
+          }
+        });
+
+        // Filled count
+        document.getElementById("filledCount").textContent = values.length + " / " + subjects.length + " diisi";
+
+        if (values.length === 0) {
+          setStats("—", "—", "—", "—", "—", "—");
+          setPredikat("na", "?", "Belum Ada Nilai", "Masukkan nilai mata pelajaran untuk melihat predikat kelulusan");
+          return;
+        }
+
+        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+        const high = Math.max(...values);
+        const low = Math.min(...values);
+        const highIdx = values.indexOf(high);
+        const lowIdx = values.indexOf(low);
+
+        const p = getPredikat(avg);
+
+        document.getElementById("avgValue").textContent = avg.toFixed(2);
+        document.getElementById("avgSub").textContent = values.length + " mata pelajaran";
+        document.getElementById("highValue").textContent = high.toFixed(0);
+        document.getElementById("highSub").textContent = names[highIdx] || "";
+        document.getElementById("lowValue").textContent = low.toFixed(0);
+        document.getElementById("lowSub").textContent = names[lowIdx] || "";
+
+        setPredikat(p.letter, p.letter, p.label + " (" + avg.toFixed(2) + ")", p.desc);
+      }
+
+      function setStats(avg, avgSub, high, highSub, low, lowSub) {
+        document.getElementById("avgValue").textContent = avg;
+        document.getElementById("avgSub").textContent = avgSub;
+        document.getElementById("highValue").textContent = high;
+        document.getElementById("highSub").textContent = highSub;
+        document.getElementById("lowValue").textContent = low;
+        document.getElementById("lowSub").textContent = lowSub;
+      }
+
+      function setPredikat(cls, letter, title, desc) {
+        const badge = document.getElementById("predikatBadge");
+        const titleEl = document.getElementById("predikatTitle");
+        const descEl = document.getElementById("predikatDesc");
+        badge.className = "predikat-badge " + cls;
+        badge.textContent = letter;
+        titleEl.textContent = title;
+        descEl.textContent = desc;
+      }
+
+      function resetAll() {
+        subjects.forEach((s) => clearGrade(s.id));
+      }
+
+      function isiContoh() {
+        const contoh = [88, 82, 90, 85, 78, 92, 75, 88, 95, 87, 90, 83, 79, 86, 80, 77, 84];
+        subjects.forEach((s, i) => {
+          const input = document.getElementById("grade_" + s.id);
+          input.value = contoh[i] || 80;
+          handleInput(input, s.id);
+        });
+        document.getElementById("namaInput").value = "Budi Santoso";
+        document.getElementById("kelasInput").value = "XII MIPA 2";
+        document.getElementById("semesterInput").value = "Semester 1 (Ganjil)";
+      }
+
+      // Init
+      buildRows();
+    </script>
+
+    <style>
+      .footer {
+        text-align: center;
+        margin-top: 48px;
+        padding: 24px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        animation: fadeUp 0.6s ease 0.5s both;
+      }
+      .footer .creators {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 6px;
+      }
+      .creator-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 6px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .creator-chip span {
+        font-size: 16px;
+      }
+      .footer .copy {
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+
+    <div style="max-width: 900px; margin: 0 auto; padding: 0 20px 40px; position: relative; z-index: 1">
+      <div class="footer">
+        <div class="creators">
+          <div class="creator-chip"><span>👨‍💻</span> Galang</div>
+          <div style="color: var(--muted)">&amp;</div>
+          <div class="creator-chip"><span>👨‍💻</span> Aldo</div>
+        </div>
+        <div class="copy">Dibuat oleh Galang &amp; Aldo · Kelas 12</div>
+      </div>
+    </div>
+  </body>
+</html>
